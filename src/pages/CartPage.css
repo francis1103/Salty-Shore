@@ -1,0 +1,81 @@
+.cart-page {
+  padding: 20px;
+  text-align: center;
+  color: white; /* Make all text white by default */
+}
+
+.cart-list {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent background for video */
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  color: white;
+}
+
+.cart-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.cart-content h2,
+.cart-content h3 {
+  color: white;
+}
+
+.checkout-form {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4); /* Optional: translucent dark form background */
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.checkout-form input,
+.checkout-form textarea {
+  width: 300px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #000;
+}
+
+.checkout-form input::placeholder,
+.checkout-form textarea::placeholder {
+  color: #555;
+}
+
+.checkout-form button {
+  padding: 10px 20px;
+  background: #00bcd4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.checkout-form button:hover {
+  background-color: #008fa1;
+}
+
+.success-msg {
+  font-size: 1.1rem;
+  color: #0f0;
+  margin-top: 20px;
+  background: rgba(231, 255, 231, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+}

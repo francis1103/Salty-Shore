@@ -1,0 +1,56 @@
+.view-button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #0077b6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.view-button:hover {
+  background-color: #023e8a;
+}
+.menu-page {
+  padding: 20px;
+  color: rgb(13, 13, 13);
+  text-align: center;
+  min-height: 100vh;
+  background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);  /* 5 columns */
+  gap: 20px;
+  padding: 40px;
+  justify-items: center;
+  align-items: center;
+}
+
+.menu-card {
+  width: 200px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.menu-card img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+
+.menu-card:hover {
+  transform: scale(1.05);
+}
+
