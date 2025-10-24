@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { itemsService } from '../services/itemsService';
+import { useCart } from '../context/CartContext';
 import './SeafoodDetail.css';
 
+// Fallback data in case API fails
 const seafoodDishes = {
   Shrimp: [
     { name: 'Garlic Butter Shrimp', img: '/Garlic Butter Shrimp.jpeg', price: 280, desc: 'Rich garlic-flavored shrimp cooked in butter.' },
@@ -138,25 +141,131 @@ const seafoodDishes = {
 function SeafoodDetail() {
   const { name } = useParams();
   const navigate = useNavigate();
+  const [dishes, setDishes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedDish, setSelectedDish] = useState(null);
 
-  const dishes = seafoodDishes[name] || [];
+  useEffect(() => {
+    const fetchDishes = async () => {
+      try {
+        const data = await itemsService.getItemByName(name);
+        setDishes(data.dishes || seafoodDishes[name] || []);
+      } catch (err) {
+        console.error(`Failed to fetch dishes for ${name}:`, err);
+        setError(`Failed to load dishes for ${name}`);
+        setDishes(seafoodDishes[name] || []);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDishes();
+  }, [name]);
+
+  const cartContext = useCart();
+  console.log('Cart context:', cartContext);
+  const { addToCart } = cartContext;
+  
+  const handleAddToCart = (dish) => {
+    const itemToAdd = {
+      name: dish.name,
+      price: dish.price,
+      img: dish.img,
+      desc: dish.desc
+    };
+    
+    console.log('Adding item to cart:', itemToAdd);
+    addToCart(itemToAdd);
+    
+    // Show notification
+    const notification = document.createElement('div');
+    notification.className = 'cart-notification';
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.right = '20px';
+    notification.style.backgroundColor = '#4CAF50';
+    notification.style.color = 'white';
+    notification.style.padding = '15px';
+    notification.style.borderRadius = '5px';
+    notification.style.zIndex = '1000';
+    notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+    notification.textContent = `✅ Added ${dish.name} to cart`;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 2000);
+  };
+
+  if (loading) {
+    return (
+      <div className="seafood-detail">
+        <div className="detail-header">
+          <h2>Loading {name} Dishes...</h2>
+          <div className="loading-spinner" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="seafood-detail">
-      <h2>Dishes Made With {name}</h2>
+      <div className="detail-header">
+        <h2>Dishes Made With {name}</h2>
+        {error && <p className="error-message">{error}</p>}
+      </div>
+
       <div className="dish-grid">
         {dishes.map((dish, index) => (
           <div key={index} className="dish-card">
             <div className="zoom-container">
-              <img src={dish.img} alt={dish.name} className="zoom-img" />
+              <img
+                src={dish.img}
+                alt={dish.name}
+                className="zoom-img"
+                onClick={() => setSelectedDish(dish)}
+              />
             </div>
-            <p>{dish.name}</p>
-            <p className="dish-description">{dish.desc}</p>
-            <p className="dish-price">₹{dish.price}</p>
+            <div className="dish-info">
+              <h3 className="dish-name">{dish.name}</h3>
+              <p className="dish-description">{dish.desc}</p>
+              <p className="dish-price">₹{dish.price}</p>
+              <button 
+                className="add-to-cart"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const itemToAdd = {
+                    name: dish.name,
+                    price: dish.price,
+                    img: dish.img,
+                    desc: dish.desc
+                  };
+                  console.log('Adding item directly:', itemToAdd);
+                  addToCart(itemToAdd);
+                  // Force a re-render
+                  setDishes([...dishes]);
+                }}
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
         ))}
       </div>
-      <button onClick={() => navigate('/menu')}>⬅ Back to Menu</button>
+
+      <button className="back-button" onClick={() => navigate('/menu')}>
+        ⬅ Back to Menu
+      </button>
+
+      {selectedDish && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>{selectedDish.name}</h3>
+            <img src={selectedDish.img} alt={selectedDish.name} />
+            <p>{selectedDish.desc}</p>
+            <p>₹{selectedDish.price}</p>
+            <button onClick={() => setSelectedDish(null)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

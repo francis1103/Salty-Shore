@@ -1,9 +1,22 @@
-import React, { useContext, useState } from 'react';
-import { DeliveryContext } from '../context/DeliveryContext';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import './CartPage.css';
 
 function CartPage() {
-  const { cart, clearCart } = useContext(DeliveryContext);
+  const { cart, clearCart, removeFromCart, updateQuantity, getCartTotal } = useCart();
+  const [isCartUpdated, setIsCartUpdated] = useState(false);
+  
+  useEffect(() => {
+    console.log('Cart contents updated:', cart);
+    setIsCartUpdated(prev => !prev); // Force re-render when cart changes
+  }, [cart]);
+
+  // Force a re-render when the component mounts
+  useEffect(() => {
+    setIsCartUpdated(prev => !prev);
+  }, []);
+  
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -60,9 +73,30 @@ function CartPage() {
                   {cart.map((item, index) => (
                     <div key={index} className="cart-item">
                       <img src={item.img} alt={item.name} />
-                      <div>
-                        <p><strong>{item.name}</strong></p>
-                        <p>₹{item.price}</p>
+                      <div className="item-details">
+                        <h3 className="item-name">{item.name}</h3>
+                        <p className="item-price">₹{item.price}</p>
+                        <div className="quantity-controls">
+                          <button
+                            className="quantity-btn"
+                            onClick={() => updateQuantity(item, item.quantity - 1)}
+                          >
+                            -
+                          </button>
+                          <span>{item.quantity}</span>
+                          <button
+                            className="quantity-btn"
+                            onClick={() => updateQuantity(item, item.quantity + 1)}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <button
+                          className="remove-btn"
+                          onClick={() => removeFromCart(item)}
+                        >
+                          Remove
+                        </button>
                       </div>
                     </div>
                   ))}
