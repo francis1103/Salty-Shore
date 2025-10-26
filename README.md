@@ -140,7 +140,7 @@ npm install
 2. Create a new cluster (if not already created)
 3. Click **"Database Access"** → Create a database user
    - Username: `saltyshore_user`
-   - Password: `Salty1234`
+   - Password: `Salty`
    - Role: **Atlas admin**
 
 4. Click **"Network Access"** → Add IP Address
@@ -157,7 +157,7 @@ Create/update `.env` file in the `backend/` folder:
 
 ```env
 PORT=5000
-MONGODB_URI=mongodb+srv://saltyshore_user:Salty1234@cluster0.7nwa8in.mongodb.net/saltyshore?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://saltyshore_user:Salty@cluster0.7nwa8in.mongodb.net/saltyshore?retryWrites=true&w=majority
 ```
 
 **Important**: Replace the cluster address with your actual MongoDB Atlas cluster address.
