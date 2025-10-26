@@ -14,7 +14,9 @@ connectDB();
 
 // Routes
 const itemsRouter = require('./routes/items');
+const ordersRouter = require('./routes/orders');
 app.use('/api/items', itemsRouter);
+app.use('/api/orders', ordersRouter);
 
 // Default route
 app.get('/', (req, res) => {

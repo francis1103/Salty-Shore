@@ -18,6 +18,9 @@ function Navbar() {
         <Link to="/cart" className="cart-link">
           Cart {cartItemCount > 0 && <span className="cart-count">{cartItemCount}</span>}
         </Link>
+        <Link to="/admin/login" className="admin-link">
+          👤 Admin
+        </Link>
       </div>
     </nav>
   );

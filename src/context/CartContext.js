@@ -6,7 +6,6 @@ const loadCartFromStorage = () => {
   try {
     const savedCart = localStorage.getItem('cart');
     const parsedCart = savedCart ? JSON.parse(savedCart) : [];
-    console.log('Loaded cart from storage:', parsedCart);
     return parsedCart;
   } catch (error) {
     console.error('Error loading cart from storage:', error);
@@ -18,12 +17,10 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(loadCartFromStorage);
 
   useEffect(() => {
-    console.log('Cart items updated:', cartItems);
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
   const addToCart = (item) => {
-    console.log('Attempting to add item:', item);
     if (!item || !item.name || typeof item.price === 'undefined') {
       console.error('Invalid item data:', item);
       return;
@@ -38,7 +35,6 @@ export const CartProvider = ({ children }) => {
           ...updatedItems[existingItemIndex],
           quantity: (updatedItems[existingItemIndex].quantity || 1) + 1
         };
-        console.log('Updated existing item:', updatedItems[existingItemIndex]);
         return updatedItems;
       }
       
@@ -49,8 +45,8 @@ export const CartProvider = ({ children }) => {
         desc: item.desc,
         quantity: 1
       };
-      console.log('Adding new item:', newItem);
-      return [...prevItems, newItem];
+      const newCart = [...prevItems, newItem];
+      return newCart;
     });
   };
 

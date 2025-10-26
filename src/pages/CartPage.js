@@ -1,21 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { ordersService } from '../services/ordersService';
 import './CartPage.css';
 
 function CartPage() {
-  const { cart, clearCart, removeFromCart, updateQuantity, getCartTotal } = useCart();
-  const [isCartUpdated, setIsCartUpdated] = useState(false);
-  
-  useEffect(() => {
-    console.log('Cart contents updated:', cart);
-    setIsCartUpdated(prev => !prev); // Force re-render when cart changes
-  }, [cart]);
-
-  // Force a re-render when the component mounts
-  useEffect(() => {
-    setIsCartUpdated(prev => !prev);
-  }, []);
+  const { cart, clearCart, removeFromCart, updateQuantity } = useCart();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -25,6 +14,8 @@ function CartPage() {
   });
 
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [orderLoading, setOrderLoading] = useState(false);
+  const [orderError, setOrderError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -33,7 +24,7 @@ function CartPage() {
     });
   };
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
     const { name, phone, address, pincode } = formData;
 
     if (!name || !phone || !address || pincode.length !== 6) {
@@ -41,8 +32,48 @@ function CartPage() {
       return;
     }
 
-    setOrderPlaced(true);
-    clearCart();
+    if (cart.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    setOrderLoading(true);
+    setOrderError(null);
+
+    try {
+      // Calculate total amount
+      const totalAmount = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+      // Prepare order data
+      const orderData = {
+        customerName: name,
+        phone,
+        address,
+        pincode,
+        items: cart.map(item => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          img: item.img,
+          desc: item.desc
+        })),
+        totalAmount
+      };
+
+      // Send order to backend
+      const response = await ordersService.createOrder(orderData);
+      console.log('Order created:', response);
+
+      // Clear cart and show success
+      setOrderPlaced(true);
+      clearCart();
+    } catch (error) {
+      console.error('Error placing order:', error);
+      setOrderError('Failed to place order. Please try again.');
+      alert('Failed to place order. Please try again.');
+    } finally {
+      setOrderLoading(false);
+    }
   };
 
   return (
@@ -131,7 +162,10 @@ function CartPage() {
                     value={formData.pincode}
                     onChange={handleChange}
                   />
-                  <button onClick={handleOrder}>Place Order</button>
+                  {orderError && <p className="error-message">{orderError}</p>}
+                  <button onClick={handleOrder} disabled={orderLoading}>
+                    {orderLoading ? 'Placing Order...' : 'Place Order'}
+                  </button>
                 </div>
               </>
             )}

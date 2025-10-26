@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { DeliveryContext } from '../context/DeliveryContext';
+import React from 'react';
+import { useCart } from '../context/CartContext';
 import './DeliveryPage.css';
 
 const deliveryItems = [
@@ -22,8 +21,12 @@ const deliveryItems = [
 ];
 
 const DeliveryPage = () => {
-  const { addToCart } = useContext(DeliveryContext);
-  const navigate = useNavigate();
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (item) => {
+    addToCart(item);
+    alert(`✅ ${item.name} added to cart!`);
+  };
 
   return (
     <div className="delivery-container">
@@ -42,7 +45,7 @@ const DeliveryPage = () => {
             <img src={item.img} alt={item.name} />
             <p><strong>{item.name}</strong></p>
             <p>₹{item.price}</p>
-            <button onClick={() => addToCart(item)}>Add to Cart</button>
+            <button onClick={() => handleAddToCart(item)}>Add to Cart</button>
           </div>
         ))}
       </div>

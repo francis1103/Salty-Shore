@@ -150,10 +150,16 @@ function SeafoodDetail() {
     const fetchDishes = async () => {
       try {
         const data = await itemsService.getItemByName(name);
-        setDishes(data.dishes || seafoodDishes[name] || []);
+        if (data.dishes && data.dishes.length > 0) {
+          setDishes(data.dishes);
+          setError(null);
+        } else {
+          // Use fallback data if API returns empty
+          setDishes(seafoodDishes[name] || []);
+        }
       } catch (err) {
         console.error(`Failed to fetch dishes for ${name}:`, err);
-        setError(`Failed to load dishes for ${name}`);
+        // Use fallback data without showing error
         setDishes(seafoodDishes[name] || []);
       } finally {
         setLoading(false);
@@ -164,36 +170,7 @@ function SeafoodDetail() {
   }, [name]);
 
   const cartContext = useCart();
-  console.log('Cart context:', cartContext);
   const { addToCart } = cartContext;
-  
-  const handleAddToCart = (dish) => {
-    const itemToAdd = {
-      name: dish.name,
-      price: dish.price,
-      img: dish.img,
-      desc: dish.desc
-    };
-    
-    console.log('Adding item to cart:', itemToAdd);
-    addToCart(itemToAdd);
-    
-    // Show notification
-    const notification = document.createElement('div');
-    notification.className = 'cart-notification';
-    notification.style.position = 'fixed';
-    notification.style.bottom = '20px';
-    notification.style.right = '20px';
-    notification.style.backgroundColor = '#4CAF50';
-    notification.style.color = 'white';
-    notification.style.padding = '15px';
-    notification.style.borderRadius = '5px';
-    notification.style.zIndex = '1000';
-    notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-    notification.textContent = `✅ Added ${dish.name} to cart`;
-    document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 2000);
-  };
 
   if (loading) {
     return (
@@ -238,10 +215,8 @@ function SeafoodDetail() {
                     img: dish.img,
                     desc: dish.desc
                   };
-                  console.log('Adding item directly:', itemToAdd);
                   addToCart(itemToAdd);
-                  // Force a re-render
-                  setDishes([...dishes]);
+                  alert(`✅ ${dish.name} added to cart!`);
                 }}
               >
                 Add to Cart
